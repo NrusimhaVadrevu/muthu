@@ -1555,6 +1555,36 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                               {rec.expectedResult || 'Reduce SLA risk from 8 orders to 2 and recover 21 minutes in queue.'}
                             </p>
                           </div>
+
+                          {/* Problem Statement Alignment: Impact Metrics Strip */}
+                          {(rec.timeSavedMinutes || rec.revenueProtectedInr || rec.affectedOrdersCount || rec.affectedWorkersCount) && (
+                            <div className="pt-2 border-t border-zinc-200 grid grid-cols-2 gap-1.5 text-[10px] font-mono font-bold">
+                              {rec.timeSavedMinutes && (
+                                <div className="px-2 py-1 rounded-md bg-zinc-100 text-zinc-800 border border-zinc-200 flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-[12px]">schedule</span>
+                                  <span>+{rec.timeSavedMinutes}m Saved</span>
+                                </div>
+                              )}
+                              {rec.revenueProtectedInr && (
+                                <div className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-[12px]">shield</span>
+                                  <span>₹{rec.revenueProtectedInr.toLocaleString()} Protected</span>
+                                </div>
+                              )}
+                              {rec.affectedOrdersCount && (
+                                <div className="px-2 py-1 rounded-md bg-amber-50 text-amber-900 border border-amber-200 flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-[12px]">package_2</span>
+                                  <span>{rec.affectedOrdersCount} Order{rec.affectedOrdersCount > 1 ? 's' : ''}</span>
+                                </div>
+                              )}
+                              {rec.affectedWorkersCount && (
+                                <div className="px-2 py-1 rounded-md bg-blue-50 text-blue-900 border border-blue-200 flex items-center gap-1">
+                                  <span className="material-symbols-outlined text-[12px]">badge</span>
+                                  <span>{rec.affectedWorkersCount} Worker{rec.affectedWorkersCount > 1 ? 's' : ''}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Action Buttons (Approve / Dismiss) */}

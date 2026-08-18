@@ -80,6 +80,10 @@ export const initialCopilotRecommendations: CopilotRecommendation[] = [
     confidence: 96,
     recommendedAction: 'Move 2 available packers from Zone B to Packing Station 2.',
     expectedResult: 'Reduce SLA risk from 8 orders to 2 and recover 21 minutes in packing queue.',
+    timeSavedMinutes: 21,
+    revenueProtectedInr: 142000,
+    affectedOrdersCount: 8,
+    affectedWorkersCount: 2,
     actionType: 'prioritize',
     badgeText: 'Muthu Recommends • B2B SLA'
   },
@@ -94,6 +98,10 @@ export const initialCopilotRecommendations: CopilotRecommendation[] = [
     confidence: 99,
     recommendedAction: 'Authorize immediate gate clearance pass and dispatch Truck AP 05 XX 1234.',
     expectedResult: 'Prevent 45-minute toll checkpoint delay and secure 100% on-time dispatch SLA.',
+    timeSavedMinutes: 45,
+    revenueProtectedInr: 86500,
+    affectedOrdersCount: 14,
+    affectedWorkersCount: 1,
     actionType: 'dispatch_first',
     badgeText: 'Muthu Decides • Logistics'
   },
@@ -108,6 +116,10 @@ export const initialCopilotRecommendations: CopilotRecommendation[] = [
     confidence: 94,
     recommendedAction: 'Split into Consignment #125-A (Dispatch Now) and #125-B (Afternoon Run).',
     expectedResult: 'Deliver 75% order value (₹3.4L) on schedule while clearing staging bay.',
+    timeSavedMinutes: 60,
+    revenueProtectedInr: 340000,
+    affectedOrdersCount: 1,
+    affectedWorkersCount: 2,
     actionType: 'split_shipment',
     badgeText: 'Muthu Recommends • Multi-Shipment'
   },
@@ -122,6 +134,10 @@ export const initialCopilotRecommendations: CopilotRecommendation[] = [
     confidence: 96,
     recommendedAction: 'Route to Express Packing Station 1 and hand over to BlueDart Courier.',
     expectedResult: 'Deliver within 18 minutes to preserve 100% On-Time Consumer SLA.',
+    timeSavedMinutes: 18,
+    revenueProtectedInr: 18900,
+    affectedOrdersCount: 1,
+    affectedWorkersCount: 1,
     actionType: 'prioritize',
     badgeText: 'Muthu Observes • Consumer Express'
   }

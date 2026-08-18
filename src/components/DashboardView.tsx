@@ -984,6 +984,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           <span>Est. Improvement: {rec.estimatedImprovement}</span>
                         </div>
                       )}
+
+                      {/* Problem Statement Alignment: Impact Metrics Strip */}
+                      {(rec.timeSavedMinutes || rec.revenueProtectedInr || rec.affectedOrdersCount || rec.affectedWorkersCount) && (
+                        <div className="pt-2 border-t border-outline-variant/15 grid grid-cols-2 gap-1.5 text-[10.5px] font-mono font-bold">
+                          {rec.timeSavedMinutes && (
+                            <div className="px-2 py-1 rounded-md bg-tertiary/10 text-tertiary border border-tertiary/20 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">schedule</span>
+                              <span>+{rec.timeSavedMinutes}m Saved</span>
+                            </div>
+                          )}
+                          {rec.revenueProtectedInr && (
+                            <div className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">shield</span>
+                              <span>₹{rec.revenueProtectedInr.toLocaleString()} Protected</span>
+                            </div>
+                          )}
+                          {rec.affectedOrdersCount && (
+                            <div className="px-2 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">package_2</span>
+                              <span>{rec.affectedOrdersCount} Order{rec.affectedOrdersCount > 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+                          {rec.affectedWorkersCount && (
+                            <div className="px-2 py-1 rounded-md bg-secondary/10 text-secondary border border-secondary/20 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">badge</span>
+                              <span>{rec.affectedWorkersCount} Worker{rec.affectedWorkersCount > 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Actions: Approve / Dismiss / View Details */}

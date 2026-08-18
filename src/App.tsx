@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import {
   PageId,
   Order,
@@ -35,28 +35,53 @@ import { INITIAL_CALENDAR_EVENTS, INITIAL_CALENDAR_INSIGHTS, CalendarEvent, Muth
 import { LanguageProvider } from './context/LanguageContext';
 import { SideNavBar } from './components/SideNavBar';
 import { TopNavBar } from './components/TopNavBar';
-import { DashboardView } from './components/DashboardView';
-import { OrdersView } from './components/OrdersView';
-import { InventoryView } from './components/InventoryView';
-import { DecisionWorkspaceView } from './components/DecisionWorkspaceView';
-import { AnalyticsView } from './components/AnalyticsView';
-import { SimulationView } from './components/SimulationView';
-import { LogisticsView } from './components/LogisticsView';
-import { WorkersView } from './components/WorkersView';
-import { EquipmentView } from './components/EquipmentView';
-import { CalendarView } from './components/CalendarView';
-import { ReportsView } from './components/ReportsView';
-import { HelpCenterView } from './components/HelpCenterView';
-import { ProductTourModal } from './components/ProductTourModal';
-import { SlaRiskModal } from './components/SlaRiskModal';
-import { CriticalSkusModal } from './components/CriticalSkusModal';
-import { NewReportModal } from './components/NewReportModal';
-import { SettingsModal } from './components/SettingsModal';
-import { SupportModal } from './components/SupportModal';
-import { DemoModeModal, DemoScenario } from './components/DemoModeModal';
 import { Toast } from './components/Toast';
 import { WorkflowControlBar, WorkflowPanelState } from './components/WorkflowControlBar';
-import { WorkflowTimelineModal } from './components/WorkflowTimelineModal';
+import { DemoScenario } from './components/DemoModeModal';
+
+// High-Performance Lazy-Loaded Views
+const DashboardView = lazy(() => import('./components/DashboardView').then((m) => ({ default: m.DashboardView })));
+const OrdersView = lazy(() => import('./components/OrdersView').then((m) => ({ default: m.OrdersView })));
+const InventoryView = lazy(() => import('./components/InventoryView').then((m) => ({ default: m.InventoryView })));
+const DecisionWorkspaceView = lazy(() => import('./components/DecisionWorkspaceView').then((m) => ({ default: m.DecisionWorkspaceView })));
+const AnalyticsView = lazy(() => import('./components/AnalyticsView').then((m) => ({ default: m.AnalyticsView })));
+const SimulationView = lazy(() => import('./components/SimulationView').then((m) => ({ default: m.SimulationView })));
+const LogisticsView = lazy(() => import('./components/LogisticsView').then((m) => ({ default: m.LogisticsView })));
+const WorkersView = lazy(() => import('./components/WorkersView').then((m) => ({ default: m.WorkersView })));
+const EquipmentView = lazy(() => import('./components/EquipmentView').then((m) => ({ default: m.EquipmentView })));
+const CalendarView = lazy(() => import('./components/CalendarView').then((m) => ({ default: m.CalendarView })));
+const ReportsView = lazy(() => import('./components/ReportsView').then((m) => ({ default: m.ReportsView })));
+const HelpCenterView = lazy(() => import('./components/HelpCenterView').then((m) => ({ default: m.HelpCenterView })));
+
+// Lazy-Loaded Modals
+const ProductTourModal = lazy(() => import('./components/ProductTourModal').then((m) => ({ default: m.ProductTourModal })));
+const SlaRiskModal = lazy(() => import('./components/SlaRiskModal').then((m) => ({ default: m.SlaRiskModal })));
+const CriticalSkusModal = lazy(() => import('./components/CriticalSkusModal').then((m) => ({ default: m.CriticalSkusModal })));
+const NewReportModal = lazy(() => import('./components/NewReportModal').then((m) => ({ default: m.NewReportModal })));
+const SettingsModal = lazy(() => import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal })));
+const SupportModal = lazy(() => import('./components/SupportModal').then((m) => ({ default: m.SupportModal })));
+const DemoModeModal = lazy(() => import('./components/DemoModeModal').then((m) => ({ default: m.DemoModeModal })));
+const WorkflowTimelineModal = lazy(() => import('./components/WorkflowTimelineModal').then((m) => ({ default: m.WorkflowTimelineModal })));
+
+function ViewLoadingSkeleton() {
+  return (
+    <div className="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-6 md:py-10 space-y-6 animate-pulse" aria-label="Loading module content" role="status">
+      <div className="flex justify-between items-center">
+        <div className="space-y-2">
+          <div className="h-8 w-64 bg-surface-container-high/60 rounded-xl" />
+          <div className="h-4 w-96 bg-surface-container-low/80 rounded-lg" />
+        </div>
+        <div className="h-10 w-32 bg-surface-container-high/60 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-28 bg-surface-container-low/80 rounded-2xl border border-outline-variant/15 p-4 space-y-3" />
+        ))}
+      </div>
+      <div className="h-96 bg-surface-container-low/80 rounded-3xl border border-outline-variant/15 p-6" />
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -183,6 +208,35 @@ function AppInner() {
       type
     });
   }, []);
+
+  // Global Accessibility: Close any open modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (inspectingOrderId) setInspectingOrderId(null);
+        else if (isProductTourOpen) setIsProductTourOpen(false);
+        else if (isSlaRiskModalOpen) setIsSlaRiskModalOpen(false);
+        else if (isCriticalSkusModalOpen) setIsCriticalSkusModalOpen(false);
+        else if (isNewReportOpen) setIsNewReportOpen(false);
+        else if (isSettingsOpen) setIsSettingsOpen(false);
+        else if (isSupportOpen) setIsSupportOpen(false);
+        else if (isDemoModeOpen) setIsDemoModeOpen(false);
+        else if (isMobileNavOpen) setIsMobileNavOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    inspectingOrderId,
+    isProductTourOpen,
+    isSlaRiskModalOpen,
+    isCriticalSkusModalOpen,
+    isNewReportOpen,
+    isSettingsOpen,
+    isSupportOpen,
+    isDemoModeOpen,
+    isMobileNavOpen
+  ]);
 
   // Handler: Advance an order workflow sequentially with Cross-Module Consistency (Section 20)
   const handleAdvanceWorkflowStep = useCallback((orderId: string) => {
@@ -530,193 +584,195 @@ function AppInner() {
         />
 
         {/* View Routing */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-24">
-          {currentPage === 'dashboard' && (
-            <DashboardView
-              stats={stats}
-              recommendations={recommendations}
-              automations={automations}
-              orders={orders}
-              engineState={engineState}
-              onNavigate={(page) => setCurrentPage(page)}
-              onAction={handleRecommendationAction}
-              onDismissRecommendation={(recId) => {
-                setRecommendations((prev) => prev.filter((r) => r.id !== recId));
-                showToast('Recommendation Dismissed', 'Muthu will recalculate dispatch routing.');
-              }}
-              onExport={() => handleExportData('Warehouse Daily Overview')}
-              onSelectOrderWorkflow={(orderId) => setInspectingOrderId(orderId)}
-              onStepAllWorkflows={handleStepAllWorkflows}
-              onSimulateQcDefect={handleSimulateGlobalQcDefect}
-              onOpenSlaRiskModal={() => setIsSlaRiskModalOpen(true)}
-              onOpenCriticalSkusModal={() => setIsCriticalSkusModalOpen(true)}
-              onNavigateToLogisticsFilter={(filter) => {
-                setLogisticsFilter(filter);
-                setCurrentPage('logistics');
-              }}
-              onNavigateToOrdersFilter={() => {
-                setGlobalOrderFilter('all');
-                setCurrentPage('orders');
-              }}
-            />
-          )}
+        <main id="main-content-area" role="main" aria-label="Warehouse Operations Workspace" className="flex-1 overflow-y-auto overflow-x-hidden relative pb-24">
+          <Suspense fallback={<ViewLoadingSkeleton />}>
+            {currentPage === 'dashboard' && (
+              <DashboardView
+                stats={stats}
+                recommendations={recommendations}
+                automations={automations}
+                orders={orders}
+                engineState={engineState}
+                onNavigate={(page) => setCurrentPage(page)}
+                onAction={handleRecommendationAction}
+                onDismissRecommendation={(recId) => {
+                  setRecommendations((prev) => prev.filter((r) => r.id !== recId));
+                  showToast('Recommendation Dismissed', 'Muthu will recalculate dispatch routing.');
+                }}
+                onExport={() => handleExportData('Warehouse Daily Overview')}
+                onSelectOrderWorkflow={(orderId) => setInspectingOrderId(orderId)}
+                onStepAllWorkflows={handleStepAllWorkflows}
+                onSimulateQcDefect={handleSimulateGlobalQcDefect}
+                onOpenSlaRiskModal={() => setIsSlaRiskModalOpen(true)}
+                onOpenCriticalSkusModal={() => setIsCriticalSkusModalOpen(true)}
+                onNavigateToLogisticsFilter={(filter) => {
+                  setLogisticsFilter(filter);
+                  setCurrentPage('logistics');
+                }}
+                onNavigateToOrdersFilter={() => {
+                  setGlobalOrderFilter('all');
+                  setCurrentPage('orders');
+                }}
+              />
+            )}
 
-          {currentPage === 'orders' && (
-            <OrdersView
-              orders={orders}
-              onUpdateOrderStatus={handleUpdateOrderStatus}
-              onRefreshAnalysis={handleRefreshAnalysis}
-              globalOrderFilter={globalOrderFilter}
-              onOrderFilterChange={setGlobalOrderFilter}
-              onFilterRiskOrders={() => {
-                showToast('Filtering Delayed Shipments', 'Showing orders impacted by FedEx hub weather events.');
-              }}
-              onNavigateToInventory={() => setCurrentPage('inventory')}
-              onAdvanceWorkflowStep={handleAdvanceWorkflowStep}
-              onTriggerQcIssue={handleTriggerQcIssue}
-              orderWorkflows={orderWorkflows}
-              initialStatusFilter={ordersSubStatusFilter}
-            />
-          )}
+            {currentPage === 'orders' && (
+              <OrdersView
+                orders={orders}
+                onUpdateOrderStatus={handleUpdateOrderStatus}
+                onRefreshAnalysis={handleRefreshAnalysis}
+                globalOrderFilter={globalOrderFilter}
+                onOrderFilterChange={setGlobalOrderFilter}
+                onFilterRiskOrders={() => {
+                  showToast('Filtering Delayed Shipments', 'Showing orders impacted by FedEx hub weather events.');
+                }}
+                onNavigateToInventory={() => setCurrentPage('inventory')}
+                onAdvanceWorkflowStep={handleAdvanceWorkflowStep}
+                onTriggerQcIssue={handleTriggerQcIssue}
+                orderWorkflows={orderWorkflows}
+                initialStatusFilter={ordersSubStatusFilter}
+              />
+            )}
 
-          {currentPage === 'inventory' && (
-            <InventoryView
-              inventory={inventory}
-              onAddItem={handleAddItem}
-              onRestockItem={handleRestockItem}
-              onExport={() => handleExportData('Inventory SKU Manifest')}
-              onViewSpaceSimulation={() => setCurrentPage('decision')}
-            />
-          )}
+            {currentPage === 'inventory' && (
+              <InventoryView
+                inventory={inventory}
+                onAddItem={handleAddItem}
+                onRestockItem={handleRestockItem}
+                onExport={() => handleExportData('Inventory SKU Manifest')}
+                onViewSpaceSimulation={() => setCurrentPage('decision')}
+              />
+            )}
 
-          {currentPage === 'decision' && (
-            <DecisionWorkspaceView
-              onApplyStrategy={handleApplyStrategy}
-              onAdjustParameters={(scenario) => {
-                showToast('Adjusting Parameters', `Editing tuning thresholds for ${scenario.title}`);
-              }}
-            />
-          )}
+            {currentPage === 'decision' && (
+              <DecisionWorkspaceView
+                onApplyStrategy={handleApplyStrategy}
+                onAdjustParameters={(scenario) => {
+                  showToast('Adjusting Parameters', `Editing tuning thresholds for ${scenario.title}`);
+                }}
+              />
+            )}
 
-          {currentPage === 'simulation' && (
-            <SimulationView
-              onShowToast={showToast}
-              onNavigateToOrders={() => setCurrentPage('orders')}
-              globalOrderFilter={globalOrderFilter}
-            />
-          )}
+            {currentPage === 'simulation' && (
+              <SimulationView
+                onShowToast={showToast}
+                onNavigateToOrders={() => setCurrentPage('orders')}
+                globalOrderFilter={globalOrderFilter}
+              />
+            )}
 
-          {currentPage === 'logistics' && (
-            <LogisticsView
-              trucks={trucks}
-              initialFilter={logisticsFilter}
-              onSelectOrder={(orderId) => setInspectingOrderId(orderId)}
-              onUpdateTruckStatus={(truckId, newStatus) => {
-                setTrucks((prev) =>
-                  prev.map((t) => (t.id === truckId ? { ...t, currentStatus: newStatus } : t))
-                );
-              }}
-            />
-          )}
-
-          {currentPage === 'analytics' && (
-            <AnalyticsView
-              onExport={() => handleExportData('Facility Performance Report')}
-              onShowToast={showToast}
-              globalOrderFilter={globalOrderFilter}
-              onOrderFilterChange={setGlobalOrderFilter}
-            />
-          )}
-
-          {currentPage === 'workers' && (
-            <WorkersView
-              workers={workers}
-              onApproveBonus={(workerId) => {
-                setWorkers((prev) =>
-                  prev.map((w) => (w.id === workerId ? { ...w, bonusApproved: true } : w))
-                );
-                const w = workers.find((w) => w.id === workerId);
-                showToast('Bonus Approved', `₹${w?.recommendedBonusInr?.toLocaleString()} bonus approved for ${w?.name}.`, 'success');
-              }}
-              onReallocateWorker={(workerId, targetZone) => {
-                setWorkers((prev) =>
-                  prev.map((w) => (w.id === workerId ? { ...w, zone: targetZone, currentWorkloadPercent: Math.min(w.currentWorkloadPercent + 15, 95) } : w))
-                );
-              }}
-              onShowToast={showToast}
-            />
-          )}
-
-          {currentPage === 'equipment' && (
-            <EquipmentView
-              equipment={equipment}
-              onScheduleMaintenance={(equipmentId) => {
-                setEquipment((prev) =>
-                  prev.map((e) => (e.id === equipmentId ? { ...e, status: 'UNDER MAINTENANCE' } : e))
-                );
-                showToast('Maintenance Scheduled', 'Equipment moved to Under Maintenance status.', 'info');
-              }}
-              onAssignBackup={(equipmentId, backupId) => {
-                setEquipment((prev) =>
-                  prev.map((e) => {
-                    if (e.id === equipmentId) return { ...e, status: 'UNDER MAINTENANCE' };
-                    if (e.id === backupId || e.equipmentId === backupId || e.name.includes('FL-03')) {
-                      return { ...e, status: 'OPERATIONAL', utilizationPercent: Math.min(e.utilizationPercent + 30, 95) };
-                    }
-                    return e;
-                  })
-                );
-                showToast('Backup Asset Assigned', 'Backup unit activated to prevent dock and line disruption.', 'success');
-              }}
-              onCompleteMaintenance={(equipmentId) => {
-                setEquipment((prev) =>
-                  prev.map((e) => (e.id === equipmentId ? { ...e, status: 'OPERATIONAL', condition: 'Good' } : e))
-                );
-                showToast('Maintenance Completed', 'Equipment restored to Operational status.', 'success');
-              }}
-              onShowToast={showToast}
-            />
-          )}
-
-          {currentPage === 'calendar' && (
-            <CalendarView
-              events={calendarEvents}
-              insights={calendarInsights}
-              onShowToast={showToast}
-              onApplyInsightAction={(insightId) => {
-                if (insightId === 'mci-101') {
-                  // Reallocate packing associates to station 2
-                  setWorkers((prev) =>
-                    prev.map((w) => (w.name.includes('Asha') || w.name.includes('Ananya') ? { ...w, currentWorkloadPercent: 78 } : w))
+            {currentPage === 'logistics' && (
+              <LogisticsView
+                trucks={trucks}
+                initialFilter={logisticsFilter}
+                onSelectOrder={(orderId) => setInspectingOrderId(orderId)}
+                onUpdateTruckStatus={(truckId, newStatus) => {
+                  setTrucks((prev) =>
+                    prev.map((t) => (t.id === truckId ? { ...t, currentStatus: newStatus } : t))
                   );
-                } else if (insightId === 'mci-102') {
-                  // Deploy standby forklift FL-03
+                }}
+              />
+            )}
+
+            {currentPage === 'analytics' && (
+              <AnalyticsView
+                onExport={() => handleExportData('Facility Performance Report')}
+                onShowToast={showToast}
+                globalOrderFilter={globalOrderFilter}
+                onOrderFilterChange={setGlobalOrderFilter}
+              />
+            )}
+
+            {currentPage === 'workers' && (
+              <WorkersView
+                workers={workers}
+                onApproveBonus={(workerId) => {
+                  setWorkers((prev) =>
+                    prev.map((w) => (w.id === workerId ? { ...w, bonusApproved: true } : w))
+                  );
+                  const w = workers.find((w) => w.id === workerId);
+                  showToast('Bonus Approved', `₹${w?.recommendedBonusInr?.toLocaleString()} bonus approved for ${w?.name}.`, 'success');
+                }}
+                onReallocateWorker={(workerId, targetZone) => {
+                  setWorkers((prev) =>
+                    prev.map((w) => (w.id === workerId ? { ...w, zone: targetZone, currentWorkloadPercent: Math.min(w.currentWorkloadPercent + 15, 95) } : w))
+                  );
+                }}
+                onShowToast={showToast}
+              />
+            )}
+
+            {currentPage === 'equipment' && (
+              <EquipmentView
+                equipment={equipment}
+                onScheduleMaintenance={(equipmentId) => {
+                  setEquipment((prev) =>
+                    prev.map((e) => (e.id === equipmentId ? { ...e, status: 'UNDER MAINTENANCE' } : e))
+                  );
+                  showToast('Maintenance Scheduled', 'Equipment moved to Under Maintenance status.', 'info');
+                }}
+                onAssignBackup={(equipmentId, backupId) => {
                   setEquipment((prev) =>
                     prev.map((e) => {
-                      if (e.equipmentId === 'FL-07') return { ...e, nextMaintenanceDate: '2026-02-18 (Night Shift)' };
-                      if (e.equipmentId === 'FL-03') return { ...e, status: 'OPERATIONAL', utilizationPercent: 82 };
+                      if (e.id === equipmentId) return { ...e, status: 'UNDER MAINTENANCE' };
+                      if (e.id === backupId || e.equipmentId === backupId || e.name.includes('FL-03')) {
+                        return { ...e, status: 'OPERATIONAL', utilizationPercent: Math.min(e.utilizationPercent + 30, 95) };
+                      }
                       return e;
                     })
                   );
-                }
-              }}
-            />
-          )}
+                  showToast('Backup Asset Assigned', 'Backup unit activated to prevent dock and line disruption.', 'success');
+                }}
+                onCompleteMaintenance={(equipmentId) => {
+                  setEquipment((prev) =>
+                    prev.map((e) => (e.id === equipmentId ? { ...e, status: 'OPERATIONAL', condition: 'Good' } : e))
+                  );
+                  showToast('Maintenance Completed', 'Equipment restored to Operational status.', 'success');
+                }}
+                onShowToast={showToast}
+              />
+            )}
 
-          {currentPage === 'reports' && (
-            <ReportsView
-              reports={monthlyReports}
-              onShowToast={showToast}
-            />
-          )}
+            {currentPage === 'calendar' && (
+              <CalendarView
+                events={calendarEvents}
+                insights={calendarInsights}
+                onShowToast={showToast}
+                onApplyInsightAction={(insightId) => {
+                  if (insightId === 'mci-101') {
+                    // Reallocate packing associates to station 2
+                    setWorkers((prev) =>
+                      prev.map((w) => (w.name.includes('Asha') || w.name.includes('Ananya') ? { ...w, currentWorkloadPercent: 78 } : w))
+                    );
+                  } else if (insightId === 'mci-102') {
+                    // Deploy standby forklift FL-03
+                    setEquipment((prev) =>
+                      prev.map((e) => {
+                        if (e.equipmentId === 'FL-07') return { ...e, nextMaintenanceDate: '2026-02-18 (Night Shift)' };
+                        if (e.equipmentId === 'FL-03') return { ...e, status: 'OPERATIONAL', utilizationPercent: 82 };
+                        return e;
+                      })
+                    );
+                  }
+                }}
+              />
+            )}
 
-          {currentPage === 'help' && (
-            <HelpCenterView
-              onNavigate={(pageId) => setCurrentPage(pageId)}
-              onStartTour={handleStartTour}
-              onShowToast={showToast}
-            />
-          )}
+            {currentPage === 'reports' && (
+              <ReportsView
+                reports={monthlyReports}
+                onShowToast={showToast}
+              />
+            )}
+
+            {currentPage === 'help' && (
+              <HelpCenterView
+                onNavigate={(pageId) => setCurrentPage(pageId)}
+                onStartTour={handleStartTour}
+                onShowToast={showToast}
+              />
+            )}
+          </Suspense>
         </main>
 
         {/* Global Compact Floating Workflow Engine Control Button [⚙] & Panel */}
@@ -737,80 +793,83 @@ function AppInner() {
         />
       </div>
 
-      {/* Guided Product Tour Modal Overlay */}
-      <ProductTourModal
-        isOpen={isProductTourOpen}
-        currentStepIndex={tourStepIndex}
-        onNextStep={() => setTourStepIndex((prev) => prev + 1)}
-        onPrevStep={() => setTourStepIndex((prev) => prev - 1)}
-        onSkipTour={() => setIsProductTourOpen(false)}
-        onFinishTour={() => {
-          setIsProductTourOpen(false);
-          showToast('Guided Tour Complete', 'You have completed the MUTHU product walkthrough!', 'success');
-        }}
-        onNavigate={(pageId) => setCurrentPage(pageId)}
-      />
+      {/* Lazy Modals within Suspense */}
+      <Suspense fallback={null}>
+        {/* Guided Product Tour Modal Overlay */}
+        <ProductTourModal
+          isOpen={isProductTourOpen}
+          currentStepIndex={tourStepIndex}
+          onNextStep={() => setTourStepIndex((prev) => prev + 1)}
+          onPrevStep={() => setTourStepIndex((prev) => prev - 1)}
+          onSkipTour={() => setIsProductTourOpen(false)}
+          onFinishTour={() => {
+            setIsProductTourOpen(false);
+            showToast('Guided Tour Complete', 'You have completed the MUTHU product walkthrough!', 'success');
+          }}
+          onNavigate={(pageId) => setCurrentPage(pageId)}
+        />
 
-      {/* SLA Risk Detailed Audit Modal */}
-      <SlaRiskModal
-        isOpen={isSlaRiskModalOpen}
-        onClose={() => setIsSlaRiskModalOpen(false)}
-        orders={orders}
-        onApproveRecommendation={(ord) => {
-          handleAdvanceWorkflowStep(ord.id);
-          showToast('Recommendation Approved', `Moved 2 packers from Zone B to Packing Station 2 for ${ord.orderNumber}. SLA risk mitigated.`);
-        }}
-        onSelectOrderWorkflow={(id) => setInspectingOrderId(id)}
-      />
+        {/* SLA Risk Detailed Audit Modal */}
+        <SlaRiskModal
+          isOpen={isSlaRiskModalOpen}
+          onClose={() => setIsSlaRiskModalOpen(false)}
+          orders={orders}
+          onApproveRecommendation={(ord) => {
+            handleAdvanceWorkflowStep(ord.id);
+            showToast('Recommendation Approved', `Moved 2 packers from Zone B to Packing Station 2 for ${ord.orderNumber}. SLA risk mitigated.`);
+          }}
+          onSelectOrderWorkflow={(id) => setInspectingOrderId(id)}
+        />
 
-      {/* Critical SKUs Inventory Modal */}
-      <CriticalSkusModal
-        isOpen={isCriticalSkusModalOpen}
-        onClose={() => setIsCriticalSkusModalOpen(false)}
-        inventory={inventory}
-        onRestockItem={(id, amt) => {
-          handleRestockItem(id, amt);
-          showToast('Restock Initiated', `Replenished inventory stock by +${amt} units.`);
-        }}
-      />
+        {/* Critical SKUs Inventory Modal */}
+        <CriticalSkusModal
+          isOpen={isCriticalSkusModalOpen}
+          onClose={() => setIsCriticalSkusModalOpen(false)}
+          inventory={inventory}
+          onRestockItem={(id, amt) => {
+            handleRestockItem(id, amt);
+            showToast('Restock Initiated', `Replenished inventory stock by +${amt} units.`);
+          }}
+        />
 
-      {/* Workflow Timeline Modal */}
-      <WorkflowTimelineModal
-        isOpen={Boolean(inspectingOrderId)}
-        order={inspectedOrder}
-        workflow={inspectedWorkflow}
-        onClose={() => setInspectingOrderId(null)}
-        onAdvanceStep={(orderId) => handleAdvanceWorkflowStep(orderId)}
-        onTriggerQcIssue={(orderId) => handleTriggerQcIssue(orderId)}
-      />
+        {/* Workflow Timeline Modal */}
+        <WorkflowTimelineModal
+          isOpen={Boolean(inspectingOrderId)}
+          order={inspectedOrder}
+          workflow={inspectedWorkflow}
+          onClose={() => setInspectingOrderId(null)}
+          onAdvanceStep={(orderId) => handleAdvanceWorkflowStep(orderId)}
+          onTriggerQcIssue={(orderId) => handleTriggerQcIssue(orderId)}
+        />
 
-      {/* Modals & Floating Components */}
-      <NewReportModal
-        isOpen={isNewReportOpen}
-        onClose={() => setIsNewReportOpen(false)}
-        onGenerate={(name, fmt) => handleExportData(`${name} (${fmt})`)}
-      />
+        {/* Modals & Floating Components */}
+        <NewReportModal
+          isOpen={isNewReportOpen}
+          onClose={() => setIsNewReportOpen(false)}
+          onGenerate={(name, fmt) => handleExportData(`${name} (${fmt})`)}
+        />
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onSave={(settings) => {
-          showToast('Settings Saved', `Facility updated to ${settings.warehouseName}`);
-        }}
-      />
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          onSave={(settings) => {
+            showToast('Settings Saved', `Facility updated to ${settings.warehouseName}`);
+          }}
+        />
 
-      <SupportModal
-        isOpen={isSupportOpen}
-        onClose={() => setIsSupportOpen(false)}
-      />
+        <SupportModal
+          isOpen={isSupportOpen}
+          onClose={() => setIsSupportOpen(false)}
+        />
 
-      {/* Hackathon Demo Showcase Modal */}
-      <DemoModeModal
-        isOpen={isDemoModeOpen}
-        onClose={() => setIsDemoModeOpen(false)}
-        onApplyScenarioToLiveApp={handleApplyDemoScenario}
-        onShowToast={showToast}
-      />
+        {/* Hackathon Demo Showcase Modal */}
+        <DemoModeModal
+          isOpen={isDemoModeOpen}
+          onClose={() => setIsDemoModeOpen(false)}
+          onApplyScenarioToLiveApp={handleApplyDemoScenario}
+          onShowToast={showToast}
+        />
+      </Suspense>
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>

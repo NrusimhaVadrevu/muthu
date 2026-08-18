@@ -397,6 +397,10 @@ export interface Recommendation {
   recommendedAction?: string;
   estimatedImprovement?: string;
   priority?: 'Critical' | 'High' | 'Medium' | 'Optimal';
+  timeSavedMinutes?: number;
+  revenueProtectedInr?: number;
+  affectedOrdersCount?: number;
+  affectedWorkersCount?: number;
 }
 
 export type OrderCategory = 'business' | 'individual';
@@ -517,6 +521,10 @@ export interface CopilotRecommendation {
   badgeText: string;
   isApplied?: boolean;
   isDismissed?: boolean;
+  timeSavedMinutes?: number;
+  revenueProtectedInr?: number;
+  affectedOrdersCount?: number;
+  affectedWorkersCount?: number;
 }
 
 export type InventoryStatus = 'Optimal' | 'Low Stock' | 'Critical' | 'Out of Stock' | 'Oversupplied';
