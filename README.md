@@ -69,12 +69,14 @@ MUTHU
 ├── 🚚 4. Logistics ───────────── Active truck fleet tracking, route ETAs & arterial corridor triage
 ├── 👷 5. Workers ─────────────── 32 personnel roster, SLA contribution, Recognition Matrix & Bonuses
 ├── ⚙️ 6. Equipment ───────────── Hardware fleet health, service intervals & standby backup deployment
-├── 🧪 7. Simulation Center ──── What-if stress testing (surges, staff deltas, dock congestion)
-├── 📈 8. Analytics ───────────── Velocity heatmaps, courier reliability benchmarks & trend curves
-├── 📑 9. Monthly Reports ─────── Executive narrative, 7 core highlights & 6-pillar financial ledger
-├── 🧠 10. Meet Muthu ─────────── Strategic decision workspace & prescriptive policy simulator
-├── ❓ 11. Help Center ────────── Interactive troubleshooting runbooks, FAQs & guided tours
-└── ⚙️ 12. Settings ───────────── Shift schedules, SLA thresholds & facility parameters
+├── 📅 7. Operations Calendar ── Integrated dispatch schedules, shifts, supplier arrivals & Muthu Insights
+├── 🧪 8. Simulation Center ──── What-if stress testing (surges, staff deltas, dock congestion)
+├── 📈 9. Analytics ───────────── Velocity heatmaps, courier reliability benchmarks & trend curves
+├── 📑 10. Monthly Reports ────── Executive narrative, 7 core highlights & 6-pillar financial ledger
+├── 🧠 11. Meet Muthu ─────────── Strategic decision workspace & prescriptive policy simulator
+├── ❓ 12. Help Center ────────── Interactive troubleshooting runbooks, FAQs & guided tours
+├── ⚙️ 13. Settings ───────────── Shift schedules, SLA thresholds & facility parameters
+└── 🌐 14. Multi-Language ────── Instant reactive switching across 🇬🇧 English, 🇮🇳 हिन्दी, and 🇮🇳 తెలుగు
 ```
 
 ---
@@ -160,6 +162,23 @@ MUTHU
 * **What it does**: Full machinery registry covering forklifts, cranes, conveyor belts, automated sorters, barcode scanners, packing machines, and AGV robots.
 * **Why it matters**: Unscheduled hardware downtime is the #1 cause of warehouse SLA violations.
 * **How MUTHU helps**: Monitors service intervals, maps dedicated backup machines to critical hardware, and enables 1-click maintenance scheduling.
+
+---
+
+### 📅 Operations Planning Calendar & Muthu Schedule Insights
+* **What it does**: Unified operational planning grid displaying daily dispatches, planned customer deliveries, worker shift schedules, preventive maintenance windows, supplier arrivals, and monthly audit reviews.
+* **Why it matters**: Disconnected calendars lead to dock gridlock, unstaffed surge waves, and maintenance during peak hours.
+* **How MUTHU helps**:
+  * **"Muthu Observes" Schedule Triage**: Automatically correlates dispatch density against packing bench staffing and maintenance outages.
+  * **1-Click Operational Approvals**: Direct approval buttons to rebalance shift rosters or reschedule servicing windows.
+  * **Switchable Views**: Seamless switching across Day, Week, and Month planning views with category filters (Dispatch, Shifts, Maintenance, Supplier, Audits).
+
+---
+
+### 🌐 Multi-Language Localization Engine
+* **What it does**: Instant, zero-reload multilingual interface supporting 🇬🇧 **English**, 🇮🇳 **हिन्दी (Hindi)**, and 🇮🇳 **తెలుగు (Telugu)**.
+* **Why it matters**: Ground-level floor workers and regional hub managers can operate MUTHU in their primary native language.
+* **How MUTHU helps**: Context-driven dynamic translation for navigation, buttons, titles, and triage cards while preserving raw data integrity (customer names, SKUs, and vehicle numbers).
 
 ---
 
@@ -299,12 +318,14 @@ MUTHU connects every heartbeat of warehouse operations—from order receipt to f
    - [4.4 Logistics & Active Fleet Tracker](#44-logistics--active-fleet-tracker)
    - [4.5 Workers & Workforce Management](#45-workers--workforce-management)
    - [4.6 Equipment & Machinery Maintenance](#46-equipment--machinery-maintenance)
-   - [4.7 Simulation Center & What-If Sandbox](#47-simulation-center--what-if-sandbox)
-   - [4.8 Analytics & Operational Intelligence](#48-analytics--operational-intelligence)
-   - [4.9 Monthly Operations & Profitability Reports](#49-monthly-operations--profitability-reports)
-   - [4.10 Meet Muthu — Strategic Decision Workspace](#410-meet-muthu--strategic-decision-workspace)
-   - [4.11 Help Center & Troubleshooting Knowledge Base](#411-help-center--troubleshooting-knowledge-base)
-   - [4.12 Settings & Warehouse Configuration](#412-settings--warehouse-configuration)
+   - [4.7 Operations Planning Calendar & Muthu Schedule Insights](#47-operations-planning-calendar--muthu-schedule-insights)
+   - [4.8 Multi-Language Localization Engine](#48-multi-language-localization-engine)
+   - [4.9 Simulation Center & What-If Sandbox](#49-simulation-center--what-if-sandbox)
+   - [4.10 Analytics & Operational Intelligence](#410-analytics--operational-intelligence)
+   - [4.11 Monthly Operations & Profitability Reports](#411-monthly-operations--profitability-reports)
+   - [4.12 Meet Muthu — Strategic Decision Workspace](#412-meet-muthu--strategic-decision-workspace)
+   - [4.13 Help Center & Troubleshooting Knowledge Base](#413-help-center--troubleshooting-knowledge-base)
+   - [4.14 Settings & Warehouse Configuration](#414-settings--warehouse-configuration)
 5. [End-to-End Workflow Engine & Live Simulation](#5-end-to-end-workflow-engine--live-simulation)
 6. [Interactive Modals & Guided Tools](#6-interactive-modals--guided-tools)
 7. [Cross-Module Data Consistency & Synchronization](#7-cross-module-data-consistency--synchronization)
@@ -496,7 +517,39 @@ graph TD
 
 ---
 
-### 4.7 Simulation Center & What-If Sandbox
+### 4.7 Operations Planning Calendar & Muthu Schedule Insights
+- **Files:** [`src/components/CalendarView.tsx`](file:///e:/muthu/src/components/CalendarView.tsx) & [`src/calendarData.ts`](file:///e:/muthu/src/calendarData.ts)
+- **Operational Event Types:**
+  - 🚚 *Dispatch Schedule*: Wholesale wave departures, express air-cargo cutoffs.
+  - 📦 *Planned Deliveries*: Hospital ICU consignments, cold-chain temperature telemetry logs.
+  - 👷 *Worker Shifts*: Shift 1, Shift 2, afternoon flash-sale surge staffing.
+  - 🔧 *Machinery Maintenance*: Hydraulic oil flushes, box sealer belt replacements.
+  - 📋 *Quality Audits*: ISO 9001 compliance, barcode scanner array calibration.
+  - 🏭 *Supplier Inbound*: Heavy corrugated box and packaging raw material drops.
+  - 📊 *Monthly Reports*: Executive operations audit sessions.
+  - ⚠ *Critical Events*: Peak weekend surges with full 32-person workforce mobilization.
+- **Muthu Schedule Intelligence ("Muthu Observes"):**
+  - Continuous analysis of upcoming operational event density against warehouse floor constraints.
+  - *Example 1*: Detects 42 dispatches with understaffed packing bench ➔ Recommends auxiliary team deployment.
+  - *Example 2*: Detects maintenance during peak dock hours ➔ Recommends rescheduling to night shift with standby machine substitution.
+- **Interactive Capabilities:** Day, Week, and Month planning views, category event filters, and an event inspection detail drawer.
+
+---
+
+### 4.8 Multi-Language Localization Engine
+- **Files:** [`src/context/LanguageContext.tsx`](file:///e:/muthu/src/context/LanguageContext.tsx) & [`src/i18n.ts`](file:///e:/muthu/src/i18n.ts)
+- **Supported Languages:**
+  - 🇬🇧 **English (en)** — Enterprise standard default.
+  - 🇮🇳 **हिन्दी (hi)** — Complete Hindi terminology for floor operations.
+  - 🇮🇳 **తెలుగు (te)** — Complete Telugu terminology for regional hub management.
+- **Architecture:**
+  - Context-driven reactive localization using `useLanguage()` and `t()` helpers.
+  - Zero-latency language switching persisted across sessions in `localStorage`.
+  - Non-destructive translation: Preserves entity integrity (customer names, product codes, SKU IDs, vehicle plates, and numerical metrics).
+
+---
+
+### 4.9 Simulation Center & What-If Sandbox
 - **File:** [`src/components/SimulationView.tsx`](file:///e:/muthu/src/components/SimulationView.tsx) & [`src/simulationEngine.ts`](file:///e:/muthu/src/simulationEngine.ts)
 - **Scenario Presets:**
   - *VIP Medical Surge*: +120 express orders, stockout stress testing.
@@ -512,7 +565,7 @@ graph TD
 
 ---
 
-### 4.8 Analytics & Operational Intelligence
+### 4.10 Analytics & Operational Intelligence
 - **File:** [`src/components/AnalyticsView.tsx`](file:///e:/muthu/src/components/AnalyticsView.tsx) & [`src/analyticsData.ts`](file:///e:/muthu/src/analyticsData.ts)
 - **Throughput & Velocity Curves:** Hourly order completion trends vs baseline.
 - **Zone Efficiency Heatmap:** Zone A, B, C, D, Mezzanine, and Dock Bay pick density.
@@ -521,7 +574,7 @@ graph TD
 
 ---
 
-### 4.9 Monthly Operations & Profitability Reports
+### 4.11 Monthly Operations & Profitability Reports
 - **Files:** [`src/components/ReportsView.tsx`](file:///e:/muthu/src/components/ReportsView.tsx) & [`src/reportsData.ts`](file:///e:/muthu/src/reportsData.ts)
 - **Muthu's Monthly Operations Summary (Top Executive Card):**
   - Full narrative synthesis of facility performance.
@@ -544,7 +597,7 @@ graph TD
 
 ---
 
-### 4.10 Meet Muthu — Strategic Decision Workspace
+### 4.12 Meet Muthu — Strategic Decision Workspace
 - **File:** [`src/components/DecisionWorkspaceView.tsx`](file:///e:/muthu/src/components/DecisionWorkspaceView.tsx)
 - **Prescriptive Strategy Sandbox:**
   - Multi-agent scenario analysis with interactive decision prompts.
@@ -552,7 +605,7 @@ graph TD
 
 ---
 
-### 4.11 Help Center & Troubleshooting Knowledge Base
+### 4.13 Help Center & Troubleshooting Knowledge Base
 - **File:** [`src/components/HelpCenterView.tsx`](file:///e:/muthu/src/components/HelpCenterView.tsx) & [`src/helpData.ts`](file:///e:/muthu/src/helpData.ts)
 - **Categorized FAQs:** Getting Started, Orders, Inventory, Logistics, Simulation, Analytics, Muthu AI, Troubleshooting.
 - **Actionable Troubleshooting Runbooks:** Problem statement, root-cause diagnosis, and step-by-step resolution workflows.
@@ -560,7 +613,7 @@ graph TD
 
 ---
 
-### 4.12 Settings & Warehouse Configuration
+### 4.14 Settings & Warehouse Configuration
 - **File:** [`src/components/SettingsModal.tsx`](file:///e:/muthu/src/components/SettingsModal.tsx)
 - Facility name, operational shift hours, auto-dispatch triggers, SLA risk alert thresholds (minutes), and notification preferences.
 
@@ -626,8 +679,10 @@ e:/muthu/
 ├── src/
 │   ├── App.tsx                      # Root component, global state, router & modal manager
 │   ├── types.ts                     # TypeScript type definitions (Workers, Equipment, Orders, Reports)
+│   ├── i18n.ts                      # Multi-language dictionary (English, Hindi, Telugu)
 │   ├── index.css                    # Design tokens, custom scrollbars, pastel animations
 │   ├── mockData.ts                  # Shared initial constants, mascot URLs, warehouse stats
+│   ├── calendarData.ts              # Operational planning events & Muthu schedule insights
 │   ├── ordersData.ts                # Mock order records, priority engine, Muthu recommendations
 │   ├── workersData.ts               # 32 Indian worker records, recognition matrix, monthly workforce data
 │   ├── equipmentData.ts             # Machinery fleet records, backup links, maintenance intervals
@@ -638,13 +693,17 @@ e:/muthu/
 │   ├── workflowEngine.ts            # 15-stage canonical WMS fulfillment workflow engine
 │   ├── helpData.ts                  # FAQs, troubleshooting guides, onboarding tour scripts
 │   │
+│   ├── context/
+│   │   └── LanguageContext.tsx      # React Context for reactive multi-language state
+│   │
 │   └── components/
-│       ├── SideNavBar.tsx           # 12-section collapsible sidebar with nested Orders submenu
-│       ├── TopNavBar.tsx            # Global search, segment filter, assistant & profile bar
+│       ├── SideNavBar.tsx           # 13-section collapsible sidebar with nested Orders submenu
+│       ├── TopNavBar.tsx            # Global search, language switcher, segment filter, profile bar
 │       ├── DashboardView.tsx        # Bento KPIs, health score, hourly curves, telemetry log
 │       ├── OrdersView.tsx           # Nested status filter, B2B/B2C tabs, collapsible Muthu panel
 │       ├── WorkersView.tsx          # 8 KPIs, Roster grid, Recognition matrix, Bonus approvals, Monthly report
 │       ├── EquipmentView.tsx        # Fleet health KPIs, Muthu maintenance alerts, backup links
+│       ├── CalendarView.tsx         # Operational planning calendar (Day/Week/Month) & Muthu Insights
 │       ├── ReportsView.tsx          # Monthly operations report, Muthu summary, 6-pillar breakdown
 │       ├── InventoryView.tsx        # SKU table, restock triggers, bin locations
 │       ├── LogisticsView.tsx        # Fleet cards, route trackers, capacity & temp monitors
