@@ -1,0 +1,6 @@
+{
+  "name": "MUTHU",
+  "description": "Premium AI-powered warehouse operations platform with real-time tracking, predictive analytics, and intelligent decision support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
