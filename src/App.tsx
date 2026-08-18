@@ -31,6 +31,8 @@ import {
 import { INITIAL_WORKERS } from './workersData';
 import { INITIAL_EQUIPMENT } from './equipmentData';
 import { INITIAL_MONTHLY_REPORTS } from './reportsData';
+import { INITIAL_CALENDAR_EVENTS, INITIAL_CALENDAR_INSIGHTS, CalendarEvent, MuthuCalendarInsight } from './calendarData';
+import { LanguageProvider } from './context/LanguageContext';
 import { SideNavBar } from './components/SideNavBar';
 import { TopNavBar } from './components/TopNavBar';
 import { DashboardView } from './components/DashboardView';
@@ -42,6 +44,7 @@ import { SimulationView } from './components/SimulationView';
 import { LogisticsView } from './components/LogisticsView';
 import { WorkersView } from './components/WorkersView';
 import { EquipmentView } from './components/EquipmentView';
+import { CalendarView } from './components/CalendarView';
 import { ReportsView } from './components/ReportsView';
 import { HelpCenterView } from './components/HelpCenterView';
 import { ProductTourModal } from './components/ProductTourModal';
@@ -56,6 +59,14 @@ import { WorkflowControlBar, WorkflowPanelState } from './components/WorkflowCon
 import { WorkflowTimelineModal } from './components/WorkflowTimelineModal';
 
 export default function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
+  );
+}
+
+function AppInner() {
   // Navigation & UI state
   const [currentPage, setCurrentPage] = useState<PageId>('dashboard');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -101,10 +112,12 @@ export default function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
   const [trucks, setTrucks] = useState(INITIAL_TRUCKS);
 
-  // Workers, Equipment, and Reports state
+  // Workers, Equipment, Calendar, and Reports state
   const [workers, setWorkers] = useState(INITIAL_WORKERS);
   const [equipment, setEquipment] = useState(INITIAL_EQUIPMENT);
   const [monthlyReports] = useState(INITIAL_MONTHLY_REPORTS);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(INITIAL_CALENDAR_EVENTS);
+  const [calendarInsights, setCalendarInsights] = useState<MuthuCalendarInsight[]>(INITIAL_CALENDAR_INSIGHTS);
 
   // Orders sidebar submenu status filter
   const [ordersSubStatusFilter, setOrdersSubStatusFilter] = useState<string>('All');
@@ -662,6 +675,31 @@ export default function App() {
                 showToast('Maintenance Completed', 'Equipment restored to Operational status.', 'success');
               }}
               onShowToast={showToast}
+            />
+          )}
+
+          {currentPage === 'calendar' && (
+            <CalendarView
+              events={calendarEvents}
+              insights={calendarInsights}
+              onShowToast={showToast}
+              onApplyInsightAction={(insightId) => {
+                if (insightId === 'mci-101') {
+                  // Reallocate packing associates to station 2
+                  setWorkers((prev) =>
+                    prev.map((w) => (w.name.includes('Asha') || w.name.includes('Ananya') ? { ...w, currentWorkloadPercent: 78 } : w))
+                  );
+                } else if (insightId === 'mci-102') {
+                  // Deploy standby forklift FL-03
+                  setEquipment((prev) =>
+                    prev.map((e) => {
+                      if (e.equipmentId === 'FL-07') return { ...e, nextMaintenanceDate: '2026-02-18 (Night Shift)' };
+                      if (e.equipmentId === 'FL-03') return { ...e, status: 'OPERATIONAL', utilizationPercent: 82 };
+                      return e;
+                    })
+                  );
+                }
+              }}
             />
           )}
 

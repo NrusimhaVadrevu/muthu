@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MonthlyOperationsReport } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ReportsViewProps {
   reports: MonthlyOperationsReport[];
@@ -7,6 +8,7 @@ interface ReportsViewProps {
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({ reports, onShowToast }) => {
+  const { t } = useLanguage();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
   const activeReport = reports[selectedMonthIndex] || reports[0];
 

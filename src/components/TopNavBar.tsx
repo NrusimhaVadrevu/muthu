@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { USER_AVATAR_URL } from '../mockData';
 import { GlobalOrderFilter } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../i18n';
 
 interface TopNavBarProps {
   onToggleMobileNav: () => void;
@@ -22,7 +24,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   onToggleSidebar,
   searchQuery,
   onSearchChange,
-  searchPlaceholder = 'Search operations...',
+  searchPlaceholder,
   globalOrderFilter = 'all',
   onOrderFilterChange,
   onOpenNotifications,
@@ -31,19 +33,23 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   onOpenDemoMode,
   onOpenHelpCenter
 }) => {
+  const { language, setLanguage, t } = useLanguage();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
   const notificationsList = [
-    { id: 'n1', title: 'Carrier delay alert at Memphis hub', time: '5m ago', unread: true, type: 'warning' },
-    { id: 'n2', title: 'Zone B throughput stabilized', time: '18m ago', unread: true, type: 'success' },
-    { id: 'n3', title: 'Shift 1 dispatched 1,402 units', time: '1h ago', unread: false, type: 'info' }
+    { id: 'n1', title: 'Carrier delay alert on Hyderabad–Vijayawada NH65', time: '5m ago', unread: true, type: 'warning' },
+    { id: 'n2', title: 'Zone B throughput stabilized after worker rebalance', time: '18m ago', unread: true, type: 'success' },
+    { id: 'n3', title: 'Morning Shift dispatched 1,402 units (100% SLA)', time: '1h ago', unread: false, type: 'info' }
   ];
+
+  const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === language) || SUPPORTED_LANGUAGES[0];
 
   return (
     <header
       id="top-navbar"
-      className="sticky top-0 z-40 flex justify-between items-center w-full px-4 sm:px-6 md:px-8 h-[72px] bg-surface/85 backdrop-blur-md border-b border-outline-variant/30 shrink-0 gap-3"
+      className="sticky top-0 z-40 flex justify-between items-center w-full px-4 sm:px-6 md:px-8 h-[72px] bg-white/90 backdrop-blur-md border-b border-zinc-200 shrink-0 gap-3"
     >
       {/* Left: Hamburger Sidebar Toggle & Global Search */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
@@ -51,26 +57,16 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
         <button
           id="btn-mobile-menu"
           onClick={onToggleMobileNav}
-          className="md:hidden text-on-surface-variant p-2 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer"
+          className="md:hidden text-zinc-600 p-2 rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer"
           aria-label="Toggle mobile menu"
           title="Toggle Navigation Menu"
         >
           <span className="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        {/* Desktop Hamburger Toggle */}
-        <button
-          id="btn-desktop-collapse-toggle"
-          onClick={onToggleSidebar}
-          className="hidden md:flex text-on-surface-variant p-2 rounded-xl hover:bg-surface-container-high transition-colors cursor-pointer"
-          aria-label="Toggle desktop sidebar collapse"
-          title="Collapse / Expand Sidebar"
-        >
-          <span className="material-symbols-outlined text-[22px]">menu</span>
-        </button>
-
+        {/* Global Search Input */}
         <div className="relative w-full">
-          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">
+          <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-[19px]">
             search
           </span>
           <input
@@ -78,82 +74,128 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="w-full pl-10 pr-9 py-2 bg-surface-container-high rounded-full border-none focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-[13.5px] text-on-surface placeholder:text-outline outline-none"
+            placeholder={searchPlaceholder || t('nav.searchPlaceholder', 'Search operations, orders, SKUs...')}
+            className="w-full bg-zinc-50 hover:bg-zinc-100/80 focus:bg-white text-zinc-900 placeholder:text-zinc-400 text-xs rounded-xl pl-10 pr-9 py-2 border border-zinc-250 focus:border-amber-500 focus:outline-none transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
             >
-              <span className="material-symbols-outlined text-[16px]">close</span>
+              <span className="material-symbols-outlined text-sm">close</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Center: Global Order Segment Filter (B2B vs B2C vs All) */}
+      {/* Center: Global Segment Pills */}
       {onOrderFilterChange && (
-        <div
-          id="global-order-type-filter"
-          className="hidden md:flex items-center p-1 bg-surface-container rounded-full border border-outline-variant/40 shadow-xs shrink-0"
-        >
+        <div className="hidden xl:flex items-center bg-zinc-100 p-1 rounded-xl border border-zinc-200 text-xs shrink-0">
           <button
             id="btn-filter-all-orders"
             onClick={() => onOrderFilterChange('all')}
-            className={`px-3 py-1 text-[12px] font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-[11.5px] font-bold rounded-lg transition-all cursor-pointer ${
               globalOrderFilter === 'all'
-                ? 'bg-surface-container-lowest text-primary shadow-xs font-extrabold'
-                : 'text-outline hover:text-on-surface'
+                ? 'bg-white text-zinc-900 shadow-2xs font-extrabold'
+                : 'text-zinc-600 hover:text-zinc-900'
             }`}
-            title="Show all enterprise and consumer orders"
+            title="Show all order categories"
           >
-            <span className="material-symbols-outlined text-[15px]">grid_view</span>
-            <span>All Orders</span>
+            {t('nav.allSegments', 'All Segments')}
           </button>
 
           <button
             id="btn-filter-business-orders"
             onClick={() => onOrderFilterChange('business')}
-            className={`px-3 py-1 text-[12px] font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-[11.5px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               globalOrderFilter === 'business'
-                ? 'bg-primary text-on-primary shadow-xs font-extrabold'
-                : 'text-outline hover:text-on-surface'
+                ? 'bg-amber-600 text-white shadow-2xs font-extrabold'
+                : 'text-zinc-600 hover:text-zinc-900'
             }`}
-            title="Filter to Business Orders (B2B Enterprise & Freight)"
+            title="Filter to Business Orders (B2B Enterprise & Wholesale)"
           >
-            <span className="material-symbols-outlined text-[15px]">domain</span>
-            <span>Business (B2B)</span>
+            <span className="material-symbols-outlined text-[14px]">domain</span>
+            <span>{t('nav.b2bOnly', 'B2B Enterprise')}</span>
           </button>
 
           <button
             id="btn-filter-individual-orders"
             onClick={() => onOrderFilterChange('individual')}
-            className={`px-3 py-1 text-[12px] font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-[11.5px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               globalOrderFilter === 'individual'
-                ? 'bg-secondary text-on-secondary shadow-xs font-extrabold'
-                : 'text-outline hover:text-on-surface'
+                ? 'bg-zinc-900 text-white shadow-2xs font-extrabold'
+                : 'text-zinc-600 hover:text-zinc-900'
             }`}
-            title="Filter to Individual Orders (B2C Consumer & Same-Day)"
+            title="Filter to Individual Orders (B2C Direct Consumer)"
           >
-            <span className="material-symbols-outlined text-[15px]">person</span>
-            <span>Individual (B2C)</span>
+            <span className="material-symbols-outlined text-[14px]">person</span>
+            <span>{t('nav.b2cOnly', 'B2C Consumer')}</span>
           </button>
         </div>
       )}
 
-      {/* Right: Actions & User Info */}
-      <div className="flex items-center gap-2 md:gap-3 text-on-surface-variant relative shrink-0">
+      {/* Right: Language Selector, Demo Mode, Notifications & Profile */}
+      <div className="flex items-center gap-2 md:gap-3 relative shrink-0">
+        {/* ========================================================================= */}
+        {/* MULTI-LANGUAGE SELECTOR (English, Hindi, Telugu) */}
+        {/* ========================================================================= */}
+        <div className="relative">
+          <button
+            id="btn-language-selector"
+            onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200/80 border border-zinc-250 text-zinc-800 font-bold text-xs transition-all cursor-pointer shadow-2xs"
+            title="Change Application Language"
+          >
+            <span className="text-sm">{currentLangObj.flag}</span>
+            <span className="font-semibold hidden sm:inline">{currentLangObj.nativeLabel}</span>
+            <span className="material-symbols-outlined text-xs text-zinc-500">expand_more</span>
+          </button>
+
+          {showLanguageMenu && (
+            <div
+              id="language-dropdown-menu"
+              className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-xl border border-zinc-200 p-1.5 z-50 animate-fadeIn"
+            >
+              <div className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono border-b border-zinc-100">
+                {t('nav.language', 'Select Language')}
+              </div>
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  id={`lang-opt-${lang.code}`}
+                  onClick={() => {
+                    setLanguage(lang.code);
+                    setShowLanguageMenu(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-left ${
+                    language === lang.code
+                      ? 'bg-amber-100 text-amber-950'
+                      : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{lang.flag}</span>
+                    <span>{lang.nativeLabel}</span>
+                  </div>
+                  {language === lang.code && (
+                    <span className="material-symbols-outlined text-xs text-amber-700">check</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Hackathon Demo Mode Pill Button */}
         {onOpenDemoMode && (
           <button
             id="btn-topbar-demo-mode"
             onClick={onOpenDemoMode}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500/20 via-primary/15 to-amber-500/20 hover:from-amber-500/30 hover:to-amber-500/30 border border-amber-500/30 text-on-surface font-label-md text-[12px] font-bold rounded-full transition-all shadow-xs active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500/15 via-amber-100/50 to-amber-500/15 hover:bg-amber-500/25 border border-amber-300 text-amber-900 font-label-md text-[11.5px] font-bold rounded-full transition-all shadow-2xs active:scale-95 cursor-pointer"
           >
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            <span className="material-symbols-outlined text-[16px] text-amber-600">smart_toy</span>
-            <span className="hidden sm:inline">Demo Mode</span>
+            <span className="material-symbols-outlined text-[15px] text-amber-600">smart_toy</span>
+            <span className="hidden sm:inline">{t('nav.demoMode', 'Demo Mode')}</span>
           </button>
         )}
 
@@ -165,48 +207,48 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               setShowNotifications(!showNotifications);
               if (onOpenNotifications) onOpenNotifications();
             }}
-            className="p-2 rounded-full hover:text-primary hover:bg-surface-container-high transition-colors relative cursor-pointer"
+            className="p-2 rounded-full hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 transition-colors relative cursor-pointer"
             aria-label="View notifications"
           >
-            <span className="material-symbols-outlined text-[22px]">notifications</span>
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-surface" />
+            <span className="material-symbols-outlined text-[20px]">notifications</span>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full ring-2 ring-white" />
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
             <div
               id="notifications-dropdown"
-              className="absolute right-0 mt-2 w-80 bg-surface-container-lowest rounded-2xl shadow-ambient-lg border border-outline-variant/30 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+              className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-zinc-200 p-4 z-50 animate-fadeIn"
             >
-              <div className="flex justify-between items-center mb-3 pb-2 border-b border-outline-variant/20">
-                <span className="font-label-md font-bold text-on-surface">Notifications</span>
-                <span className="font-label-caps text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                  2 New
+              <div className="flex justify-between items-center mb-3 pb-2 border-b border-zinc-100">
+                <span className="font-bold text-xs text-zinc-900">{t('nav.notifications', 'Notifications')}</span>
+                <span className="text-[10px] text-amber-900 font-bold bg-amber-100 px-2 py-0.5 rounded-full font-mono">
+                  3 Active
                 </span>
               </div>
-              <div className="space-y-2.5 max-h-64 overflow-y-auto">
+              <div className="space-y-2 max-h-64 overflow-y-auto">
                 {notificationsList.map((n) => (
                   <div
                     key={n.id}
-                    className={`p-2.5 rounded-xl transition-colors cursor-pointer text-left ${
-                      n.unread ? 'bg-surface-container-low/70 font-medium' : 'hover:bg-surface-container-low'
+                    className={`p-2.5 rounded-xl transition-colors cursor-pointer text-left text-xs ${
+                      n.unread ? 'bg-amber-50/60 font-medium' : 'hover:bg-zinc-50'
                     }`}
                   >
                     <div className="flex items-start gap-2">
                       <span
                         className={`material-symbols-outlined text-[16px] mt-0.5 ${
                           n.type === 'warning'
-                            ? 'text-error'
+                            ? 'text-amber-600'
                             : n.type === 'success'
-                            ? 'text-tertiary'
-                            : 'text-primary'
+                            ? 'text-emerald-600'
+                            : 'text-zinc-500'
                         }`}
                       >
                         {n.type === 'warning' ? 'warning' : n.type === 'success' ? 'check_circle' : 'info'}
                       </span>
                       <div className="flex-1">
-                        <p className="text-[13px] text-on-surface leading-snug">{n.title}</p>
-                        <span className="font-label-caps text-[10px] text-outline mt-1 block">
+                        <p className="text-[12px] text-zinc-900 leading-snug">{n.title}</p>
+                        <span className="text-[10px] text-zinc-400 mt-1 block font-mono">
                           {n.time}
                         </span>
                       </div>
@@ -216,7 +258,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               </div>
               <button
                 onClick={() => setShowNotifications(false)}
-                className="w-full mt-3 py-1.5 text-center font-label-md text-[12px] text-primary hover:underline"
+                className="w-full mt-3 py-1.5 text-center text-[11px] font-bold text-amber-700 hover:underline cursor-pointer"
               >
                 Mark all as read
               </button>
@@ -228,13 +270,14 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
         <button
           id="btn-chat"
           onClick={onOpenQuickAssistant}
-          className="p-2 rounded-full hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer"
+          className="p-2 rounded-full hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer"
           aria-label="Open operations assistant"
+          title={t('nav.quickAssistant', 'Quick Copilot')}
         >
-          <span className="material-symbols-outlined text-[22px]">chat_bubble</span>
+          <span className="material-symbols-outlined text-[20px]">chat_bubble</span>
         </button>
 
-        <div className="w-px h-6 bg-outline-variant/30 mx-1 hidden sm:block" />
+        <div className="w-px h-6 bg-zinc-200 mx-1 hidden sm:block" />
 
         {/* User Profile */}
         <div className="relative">
@@ -244,22 +287,22 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               setShowProfileMenu(!showProfileMenu);
               if (onOpenProfile) onOpenProfile();
             }}
-            className="flex items-center gap-3 hover:bg-surface-container-high p-1.5 md:pr-3 rounded-full transition-colors cursor-pointer text-left"
+            className="flex items-center gap-2.5 hover:bg-zinc-100 p-1.5 md:pr-3 rounded-full transition-colors cursor-pointer text-left"
           >
             <img
               alt="Jane Doe - Operations Manager"
-              className="w-8 h-8 rounded-full object-cover border border-outline-variant shrink-0"
+              className="w-8 h-8 rounded-full object-cover border border-zinc-300 shrink-0"
               src={USER_AVATAR_URL}
             />
             <div className="hidden lg:block">
-              <p className="font-label-md text-label-md text-on-surface leading-tight font-semibold">
+              <p className="text-xs font-bold text-zinc-900 leading-tight">
                 Jane Doe
               </p>
-              <p className="font-label-caps text-[10px] text-outline uppercase tracking-wider">
-                Operations Mgr
+              <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
+                Operations Lead
               </p>
             </div>
-            <span className="material-symbols-outlined text-outline text-[18px] hidden lg:block">
+            <span className="material-symbols-outlined text-zinc-400 text-[16px] hidden lg:block">
               expand_more
             </span>
           </button>
@@ -268,31 +311,31 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {showProfileMenu && (
             <div
               id="profile-dropdown"
-              className="absolute right-0 mt-2 w-56 bg-surface-container-lowest rounded-2xl shadow-ambient-lg border border-outline-variant/30 p-2 z-50"
+              className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 animate-fadeIn"
             >
-              <div className="px-3 py-2 border-b border-outline-variant/20 mb-1">
-                <p className="font-label-md font-bold text-on-surface">Jane Doe</p>
-                <p className="text-[12px] text-on-surface-variant">Facility Bay-04 • West Coast</p>
+              <div className="px-3 py-2 border-b border-zinc-100 mb-1">
+                <p className="font-bold text-xs text-zinc-900">Jane Doe</p>
+                <p className="text-[11px] text-zinc-500 font-mono">HYD-Central Hub • Dock Bay 04</p>
               </div>
               <button
                 onClick={() => setShowProfileMenu(false)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-on-surface hover:bg-surface-container-low rounded-lg transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors text-left cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">badge</span>
+                <span className="material-symbols-outlined text-[16px]">badge</span>
                 Operational Profile
               </button>
               <button
                 onClick={() => setShowProfileMenu(false)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-on-surface hover:bg-surface-container-low rounded-lg transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors text-left cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[18px]">tune</span>
+                <span className="material-symbols-outlined text-[16px]">tune</span>
                 Warehouse Preferences
               </button>
               <button
                 onClick={() => setShowProfileMenu(false)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-error hover:bg-error-container/20 rounded-lg transition-colors text-left mt-1 border-t border-outline-variant/20 pt-2"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-700 hover:bg-rose-50 rounded-xl transition-colors text-left mt-1 border-t border-zinc-100 pt-2 cursor-pointer font-bold"
               >
-                <span className="material-symbols-outlined text-[18px]">lock</span>
+                <span className="material-symbols-outlined text-[16px]">lock</span>
                 Lock Terminal
               </button>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageId } from '../types';
 import { MASCOT_LOGO_URL } from '../mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 interface SideNavBarProps {
   currentPage: PageId;
@@ -29,36 +30,38 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
   onCloseMobile,
   isCollapsed = false
 }) => {
+  const { t } = useLanguage();
   const [isOrdersSubmenuOpen, setIsOrdersSubmenuOpen] = useState(true);
   const [activeSubFilter, setActiveSubFilter] = useState<string>('All');
 
-  // Exact 12 navigation sections requested in Section 1
-  const navItems: { id: PageId | 'settings'; label: string; icon: string; isAiCopilot?: boolean }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'orders', label: 'Orders', icon: 'shopping_cart' },
-    { id: 'inventory', label: 'Inventory', icon: 'inventory_2' },
-    { id: 'logistics', label: 'Logistics', icon: 'local_shipping' },
-    { id: 'workers', label: 'Workers', icon: 'group' },
-    { id: 'equipment', label: 'Equipment', icon: 'precision_manufacturing' },
-    { id: 'simulation', label: 'Simulation Center', icon: 'model_training' },
-    { id: 'analytics', label: 'Analytics', icon: 'analytics' },
-    { id: 'reports', label: 'Reports', icon: 'assessment' },
-    { id: 'decision', label: '🤎 Meet Muthu', icon: 'smart_toy', isAiCopilot: true },
-    { id: 'help', label: 'Help Center', icon: 'help' },
-    { id: 'settings', label: 'Settings', icon: 'settings' }
+  // Complete 13 Navigation Sections (including Operations Calendar)
+  const navItems: { id: PageId | 'settings'; translationKey: string; defaultLabel: string; icon: string; isAiCopilot?: boolean }[] = [
+    { id: 'dashboard', translationKey: 'sidebar.dashboard', defaultLabel: 'Dashboard', icon: 'dashboard' },
+    { id: 'orders', translationKey: 'sidebar.orders', defaultLabel: 'Orders', icon: 'shopping_cart' },
+    { id: 'inventory', translationKey: 'sidebar.inventory', defaultLabel: 'Inventory', icon: 'inventory_2' },
+    { id: 'logistics', translationKey: 'sidebar.logistics', defaultLabel: 'Logistics', icon: 'local_shipping' },
+    { id: 'workers', translationKey: 'sidebar.workers', defaultLabel: 'Workers', icon: 'group' },
+    { id: 'equipment', translationKey: 'sidebar.equipment', defaultLabel: 'Equipment', icon: 'precision_manufacturing' },
+    { id: 'calendar', translationKey: 'sidebar.calendar', defaultLabel: 'Operations Calendar', icon: 'calendar_month' },
+    { id: 'simulation', translationKey: 'sidebar.simulation', defaultLabel: 'Simulation Center', icon: 'model_training' },
+    { id: 'analytics', translationKey: 'sidebar.analytics', defaultLabel: 'Analytics', icon: 'analytics' },
+    { id: 'reports', translationKey: 'sidebar.reports', defaultLabel: 'Reports', icon: 'assessment' },
+    { id: 'decision', translationKey: 'sidebar.meetMuthu', defaultLabel: '🤎 Meet Muthu', icon: 'smart_toy', isAiCopilot: true },
+    { id: 'help', translationKey: 'sidebar.helpCenter', defaultLabel: 'Help Center', icon: 'help' },
+    { id: 'settings', translationKey: 'sidebar.settings', defaultLabel: 'Settings', icon: 'settings' }
   ];
 
   // Nested Orders Submenu Items (Section 16)
   const orderStatusSubItems = [
-    { key: 'All', label: 'All Orders', countKey: 'All' },
-    { key: 'RECEIVED', label: 'Received', countKey: 'RECEIVED' },
-    { key: 'PICKING', label: 'Picking', countKey: 'PICKING' },
-    { key: 'PACKING', label: 'Packing', countKey: 'PACKING' },
-    { key: 'QUALITY CHECK', label: 'Quality Check', countKey: 'QUALITY CHECK' },
-    { key: 'READY FOR DISPATCH', label: 'Ready for Dispatch', countKey: 'READY FOR DISPATCH' },
-    { key: 'DISPATCHED', label: 'Dispatched', countKey: 'DISPATCHED' },
-    { key: 'ON THE WAY', label: 'On the Way', countKey: 'ON THE WAY' },
-    { key: 'DELIVERED', label: 'Delivered', countKey: 'DELIVERED' }
+    { key: 'All', translationKey: 'status.all', label: 'All Orders', countKey: 'All' },
+    { key: 'RECEIVED', translationKey: 'status.received', label: 'Received', countKey: 'RECEIVED' },
+    { key: 'PICKING', translationKey: 'status.picking', label: 'Picking', countKey: 'PICKING' },
+    { key: 'PACKING', translationKey: 'status.packing', label: 'Packing', countKey: 'PACKING' },
+    { key: 'QUALITY CHECK', translationKey: 'status.qualityCheck', label: 'Quality Check', countKey: 'QUALITY CHECK' },
+    { key: 'READY FOR DISPATCH', translationKey: 'status.readyForDispatch', label: 'Ready for Dispatch', countKey: 'READY FOR DISPATCH' },
+    { key: 'DISPATCHED', translationKey: 'status.dispatched', label: 'Dispatched', countKey: 'DISPATCHED' },
+    { key: 'ON THE WAY', translationKey: 'status.onTheWay', label: 'On the Way', countKey: 'ON THE WAY' },
+    { key: 'DELIVERED', translationKey: 'status.delivered', label: 'Delivered', countKey: 'DELIVERED' }
   ];
 
   const handleItemClick = (id: PageId | 'settings') => {
@@ -112,7 +115,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
               MUTHU
             </h1>
             <p className="font-label-caps text-[9px] text-zinc-500 uppercase tracking-wider truncate font-mono">
-              Smart Operations Partner
+              {t('sidebar.activeHub', 'Smart Operations Partner')}
             </p>
           </div>
         )}
@@ -123,13 +126,14 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
         {navItems.map((item) => {
           const isActive = currentPage === item.id;
           const isOrders = item.id === 'orders';
+          const displayLabel = t(item.translationKey, item.defaultLabel);
 
           return (
             <div key={item.id} className="w-full space-y-0.5">
               <button
                 id={`nav-link-${item.id}`}
                 onClick={() => handleItemClick(item.id)}
-                title={collapsed ? item.label : undefined}
+                title={collapsed ? displayLabel : undefined}
                 className={`w-full flex items-center gap-2.5 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
                   collapsed ? 'justify-center px-2' : 'px-3 text-left'
                 } ${
@@ -150,7 +154,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
                   {item.icon}
                 </span>
                 {!collapsed && (
-                  <span className="font-label-md text-[12.5px] flex-1 truncate">{item.label}</span>
+                  <span className="font-label-md text-[12.5px] flex-1 truncate">{displayLabel}</span>
                 )}
                 {!collapsed && isOrders && (
                   <span className="material-symbols-outlined text-base text-zinc-400">
@@ -168,6 +172,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
                   {orderStatusSubItems.map((sub) => {
                     const count = ordersCounts ? ordersCounts[sub.countKey] ?? 0 : 0;
                     const isSubActive = currentPage === 'orders' && activeSubFilter === sub.key;
+                    const subLabel = t(sub.translationKey, sub.label);
 
                     return (
                       <button
@@ -180,7 +185,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
                             : 'font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                         }`}
                       >
-                        <span className="truncate">{sub.label}</span>
+                        <span className="truncate">{subLabel}</span>
                         <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono font-bold ${
                           isSubActive
                             ? 'bg-amber-200 text-amber-900'
@@ -204,7 +209,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
           <button
             id="btn-sidebar-demo-mode"
             onClick={onOpenDemoMode}
-            title={collapsed ? 'Demo Mode Showcase' : undefined}
+            title={collapsed ? t('nav.demoMode', 'Demo Mode Showcase') : undefined}
             className={`w-full py-1.5 bg-gradient-to-r from-amber-500/15 via-amber-100/40 to-amber-500/15 border border-amber-300 text-amber-900 font-label-md text-[12px] rounded-xl hover:bg-amber-500/20 transition-all flex items-center shadow-2xs cursor-pointer group ${
               collapsed ? 'justify-center px-2' : 'justify-between px-3'
             }`}
@@ -213,7 +218,7 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
               <span className="material-symbols-outlined text-[17px] text-amber-600 group-hover:scale-110 transition-transform shrink-0">
                 smart_toy
               </span>
-              {!collapsed && <span className="font-bold text-zinc-900">Demo Mode</span>}
+              {!collapsed && <span className="font-bold text-zinc-900">{t('nav.demoMode', 'Demo Mode')}</span>}
             </div>
             {!collapsed && (
               <span className="font-label-caps text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-800 uppercase">
@@ -226,25 +231,25 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
         <button
           id="btn-new-report"
           onClick={onOpenNewReport}
-          title={collapsed ? 'New Report' : undefined}
+          title={collapsed ? t('action.export', 'New Report') : undefined}
           className={`w-full py-1.5 bg-zinc-900 text-white font-label-md text-[12px] rounded-xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer ${
             collapsed ? 'px-2' : 'px-3'
           }`}
         >
           <span className="material-symbols-outlined text-[17px] shrink-0">add</span>
-          {!collapsed && <span>New Report</span>}
+          {!collapsed && <span>{t('action.export', 'New Report')}</span>}
         </button>
 
         <button
           id="nav-link-support"
           onClick={onOpenSupport}
-          title={collapsed ? 'Support' : undefined}
+          title={collapsed ? t('sidebar.support', 'Support') : undefined}
           className={`flex items-center gap-2.5 py-1.5 font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 rounded-xl transition-colors cursor-pointer text-left ${
             collapsed ? 'justify-center px-2' : 'px-3'
           }`}
         >
           <span className="material-symbols-outlined text-[19px] shrink-0">support_agent</span>
-          {!collapsed && <span className="font-label-md text-[12px]">Support</span>}
+          {!collapsed && <span className="font-label-md text-[12px]">{t('sidebar.support', 'Support')}</span>}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Worker, WorkerRole, WorkerPerformanceStatus, WorkerAvailability, WorkerRecognitionCategory } from '../types';
 import { MONTHLY_WORKFORCE_HISTORY, MonthlyWorkforceRecord } from '../workersData';
+import { useLanguage } from '../context/LanguageContext';
 
 interface WorkersViewProps {
   workers: Worker[];
@@ -15,6 +16,7 @@ export const WorkersView: React.FC<WorkersViewProps> = ({
   onReallocateWorker,
   onShowToast
 }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'roster' | 'recognition' | 'bonuses' | 'monthly_report'>('roster');
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('All');

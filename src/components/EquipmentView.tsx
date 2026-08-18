@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Equipment, EquipmentStatus, EquipmentType } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface EquipmentViewProps {
   equipment: Equipment[];
@@ -16,6 +17,7 @@ export const EquipmentView: React.FC<EquipmentViewProps> = ({
   onCompleteMaintenance,
   onShowToast
 }) => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('All');

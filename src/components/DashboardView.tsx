@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { WarehouseStats, Recommendation, AutomationLog, PageId, Order, WorkflowEngineState, GlobalOrderFilter } from '../types';
 import { WAREHOUSE_MAP_URL, MASCOT_LOGO_URL } from '../mockData';
 import { CANONICAL_WORKFLOW_STEPS, mapOrderStatusToStageIndex } from '../workflowEngine';
+import { useLanguage } from '../context/LanguageContext';
 
 interface DashboardViewProps {
   stats: WarehouseStats;
@@ -46,6 +47,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigateToLogisticsFilter,
   onNavigateToOrdersFilter
 }) => {
+  const { t } = useLanguage();
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
   // Filtered orders according to global filter
@@ -75,10 +77,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const b2cAwaitingCourier = b2cOrders.filter((o) => o.currentStatus === 'Ready for Dispatch' || o.currentStatus === 'Quality Check').length;
   const b2cNearSlaCount = b2cOrders.filter((o) => o.slaRemainingMinutes > 0 && o.slaRemainingMinutes <= 45 && o.currentStatus !== 'Delivered').length;
 
-  // Active streaming orders for the compact workflow visualizer
-  const activeWorkflowOrders = displayedOrders
+  // Operational pipeline queues
+  const actionableOrders = displayedOrders
     .filter((o) => o.currentStatus !== 'Delivered')
     .slice(0, 4);
+
+  const activeWorkflowOrders = actionableOrders;
 
   // High priority / SLA at risk orders
   const criticalSlaOrders = displayedOrders
@@ -123,10 +127,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div>
             <h1 className="font-headline-md text-[26px] md:text-[28px] font-bold text-on-surface tracking-tight leading-tight">
-              Warehouse Command Center
+              {t('dash.title', 'Warehouse Command Center')}
             </h1>
             <p className="font-body-md text-[13.5px] text-on-surface-variant mt-0.5">
-              Today's Warehouse Status • Automated 15-stage fulfillment engine & live decision telemetry.
+              {t('dash.subtitle', "Today's Warehouse Status • Automated 15-stage fulfillment engine & live decision telemetry.")}
             </p>
           </div>
 

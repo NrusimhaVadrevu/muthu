@@ -5,6 +5,7 @@ export type PageId =
   | 'logistics'
   | 'workers'
   | 'equipment'
+  | 'calendar'
   | 'analytics'
   | 'reports'
   | 'decision'

@@ -3,6 +3,7 @@ import { Order, OrderStatus, OrderPriority, CustomerType, ShippingType, CopilotR
 import { ORDER_PIPELINE_STAGES, getNextOrderStatus, initialCopilotRecommendations, computeOrderPriority } from '../ordersData';
 import { generateOrderWorkflow, CANONICAL_WORKFLOW_STEPS, mapOrderStatusToStageIndex } from '../workflowEngine';
 import { WorkflowTimeline } from './WorkflowTimeline';
+import { useLanguage } from '../context/LanguageContext';
 
 interface OrdersViewProps {
   orders: Order[];
@@ -35,6 +36,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   onOrderFilterChange,
   initialStatusFilter = 'All'
 }) => {
+  const { t } = useLanguage();
   // Local state for orders (to allow instant inline mutations, split shipments, expedited overrides)
   const [localOrders, setLocalOrders] = useState<Order[]>(orders);
 
