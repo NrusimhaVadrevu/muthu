@@ -1,6 +1,9 @@
 # 📦 MUTHU
 
-### Your Smart Operations Partner.
+<div align="center">
+  <img width="160" height="160" alt="MUTHU Mascot Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpTp0WQq90gXpj1CboNjokGb3pSFx1jcUBeuCzVsO1MbQEkec3UfO0XzZhkTna518efXq37yCqxKsN6xBkIUxECPqFv9ciU0lXcW0dU5yHHGVlAGWdZ3PaUM7_OBzspErbzWeK5beXugqWWMIgOMrffKqhqWiulBak8Zm8RyaQPdst5kTEmr1j1lhIsLnkVcsHcr_D_OnL5AsKoRm_1BknQgL69temD07rYZdQBJRqz0WjZDLvJToX" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);" />
+  <h3>Your Smart Operations Partner.</h3>
+</div>
 
 > **"A warehouse doesn't need another dashboard.**  
 > **It needs help deciding what to do next."**

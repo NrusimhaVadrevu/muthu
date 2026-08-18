@@ -1,7 +1,7 @@
 # MUTHU — Smart Operations Partner
 
 <div align="center">
-  <img width="180" height="180" alt="MUTHU Mascot Logo" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);" />
+  <img width="180" height="180" alt="MUTHU Mascot Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpTp0WQq90gXpj1CboNjokGb3pSFx1jcUBeuCzVsO1MbQEkec3UfO0XzZhkTna518efXq37yCqxKsN6xBkIUxECPqFv9ciU0lXcW0dU5yHHGVlAGWdZ3PaUM7_OBzspErbzWeK5beXugqWWMIgOMrffKqhqWiulBak8Zm8RyaQPdst5kTEmr1j1lhIsLnkVcsHcr_D_OnL5AsKoRm_1BknQgL69temD07rYZdQBJRqz0WjZDLvJToX" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);" />
   <h2>AI-Powered Warehouse & Logistics Operations Platform</h2>
   <p><em>Real-Time Workflow Orchestration • Predictive Inventory • Prescriptive AI Triage • Workforce Velocity • Hardware Health • Financial Impact Auditing</em></p>
 </div>
